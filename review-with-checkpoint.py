@@ -66,20 +66,20 @@ test_data = multi_hot_sequences(test_data, dimension=NUM_WORDS)
 model = create_model()
 model.summary()
 
-model.fit(train_data, train_labels,
-          epochs=20,
-          batch_size=512,
-          validation_data=(test_data, test_labels),
-          verbose=2,
-          callbacks=[cp_callback])
+#model.fit(train_data, train_labels,
+#          epochs=20,
+#          batch_size=512,
+#          validation_data=(test_data, test_labels),
+#          verbose=2,
+#          callbacks=[cp_callback])
 
 
 # load snapshot
 model1 = create_model()
 
-loss,acc = model.evaluate(test_data, test_labels)
+loss,acc, *_ = model1.evaluate(test_data, test_labels)
 print("Untrained model, acc: {:5.2f}%".format(100*acc))
 
 model1.load_weights(checkpoint_path)
-loss,acc = model.evaluate(test_data, test_labels)
+loss,acc, *_ = model1.evaluate(test_data, test_labels)
 print("loaded model, acc: {:5.2f}%".format(100*acc))
