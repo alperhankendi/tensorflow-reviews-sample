@@ -51,12 +51,13 @@ def create_model():
 
 # create checkpoint
 
-checkpoint_path = "model/checkpoint-01.ckpt"
+checkpoint_path = "model/cp-{epoch:04d}.ckpt"
 checkpoint_dir = os.path.dirname(checkpoint_path)
 # Create checkpoint callback
 cp_callback = tf.keras.callbacks.ModelCheckpoint(checkpoint_path,
                                                  save_weights_only=True,
-                                                 verbose=1)
+                                                 verbose=1,
+                                                 period=5)
 
 
 (train_data, train_labels), (test_data, test_labels) = keras.datasets.imdb.load_data(num_words=NUM_WORDS)
@@ -64,22 +65,26 @@ train_data = multi_hot_sequences(train_data, dimension=NUM_WORDS)
 test_data = multi_hot_sequences(test_data, dimension=NUM_WORDS)
 
 model = create_model()
+model.save_weights(checkpoint_path.format(epoch=0))
 model.summary()
 
-#model.fit(train_data, train_labels,
-#          epochs=20,
-#          batch_size=512,
-#          validation_data=(test_data, test_labels),
-#          verbose=2,
-#          callbacks=[cp_callback])
+##train and save snapshot
+model.fit(train_data, train_labels,
+          epochs=50,
+          batch_size=512,
+          validation_data=(test_data, test_labels),
+          verbose=1,
+          callbacks=[cp_callback])
 
 
-# load snapshot
+# create new model and load the snapshot and evulate shit
 model1 = create_model()
 
 loss,acc, *_ = model1.evaluate(test_data, test_labels)
 print("Untrained model, acc: {:5.2f}%".format(100*acc))
 
-model1.load_weights(checkpoint_path)
+latest = tf.train.latest_checkpoint(checkpoint_dir)
+print("latest checkpoint is :%s",latest)
+model1.load_weights(latest)
 loss,acc, *_ = model1.evaluate(test_data, test_labels)
 print("loaded model, acc: {:5.2f}%".format(100*acc))
