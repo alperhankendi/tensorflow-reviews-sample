@@ -77,9 +77,9 @@ model.fit(train_data, train_labels,
 # load snapshot
 model1 = create_model()
 
-loss,acc = model.evaluate(test_images, test_labels)
+loss,acc = model.evaluate(test_data, test_labels)
 print("Untrained model, acc: {:5.2f}%".format(100*acc))
 
 model1.load_weights(checkpoint_path)
-loss,acc = model.evaluate(test_images, test_labels)
+loss,acc = model.evaluate(test_data, test_labels)
 print("loaded model, acc: {:5.2f}%".format(100*acc))
